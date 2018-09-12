@@ -6,12 +6,10 @@ parameters:
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
-   Write-Host "env:USER_PASSWORD = $($env:USER_PASSWORD)"
-   Write-Host "env:USER_PWD = $($env:USER_PWD)"
 
-   $Password = $env:USER_PASSWORD
-   $Config = Read-ALConfiguration -Path .\ -Password $Password
-   $Config | Init-ALEnvironment -Build $True -Password $Password 
+   Write-Host "env:USER_PWD = $($env:USER_PWD)"
+   $Config = Read-ALConfiguration -Path .\ -Password $env:USER_PWD
+   $Config | Init-ALEnvironment -Build $True -Password $env:USER_PWD
 
   failOnStderr: true
   displayName: 'Prepare environment'

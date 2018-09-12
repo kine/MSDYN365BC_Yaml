@@ -6,11 +6,12 @@ parameters:
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
-   $Password = $env:USER_PASSWORD
+   Write-Host "env:USER_PWD = $($env:USER_PWD)"
+
    $Config = Read-ALConfiguration -Path .\ 
-   $Config | Download-ALSystemPackages -Password $Password -Build 'True' -AlPackagesPath $env:Build_BinariesDirectory
+   $Config | Download-ALSystemPackages -Password $env:USER_PWD -Build 'True' -AlPackagesPath $env:Build_BinariesDirectory
     
 
   displayName: 'Download system symbols'
   env:
-    USER_PASSWORD: ${{ parameters.pwd }}
+    USER_PWD: ${{ parameters.pwd }}
