@@ -3,17 +3,18 @@
 parameters:
   TrxFile: 'TestResults.trx'
   TestCodeunitId: 0
+  pwd: 'pass@word1'
 
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
    
    $Config = Read-ALConfiguration -Path .\ 
-   $Config | Test-ALApp -TrxFile $env:TrxFile -TestCodeunitId $env:TestCodeunitId -ErrorOnFailedTest 
+   $Config | Test-ALApp -TrxFile $env:TrxFile -TestCodeunitId $env:TestCodeunitId -ErrorOnFailedTest -Password $env:USER_PASSWORD
 
   displayName: 'Run Tests'
   env:
     TrxFile: ${{ parameters.TrxFile }}
     TestCodeunitId: ${{ parameters.TestCodeunitId }}
-
+    USER_PASSWORD: ${{ parameters.pwd }}
 
