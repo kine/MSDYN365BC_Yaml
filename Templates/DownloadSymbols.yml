@@ -1,5 +1,8 @@
 # File: DownloadSymbols.yml
 
+parameters:
+  pwd: 'pass@word1'
+
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
@@ -9,4 +12,5 @@ steps:
     
 
   displayName: 'Download system symbols'
-
+  env:
+    USER_PASSWORD: ${{ parameters.pwd }}

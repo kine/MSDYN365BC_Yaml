@@ -1,12 +1,19 @@
 # File: PrepareEnv.yml
 
+parameters:
+  pwd: 'pass@word1'
+
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
+   Write-Host "env:USER_PASSWORD = $($env:USER_PASSWORD)"
+   Write-Host "env:USER_PWD = $($env:USER_PWD)"
+
    $Password = $env:USER_PASSWORD
    $Config = Read-ALConfiguration -Path .\ -Password $Password
    $Config | Init-ALEnvironment -Build $True -Password $Password 
 
   failOnStderr: true
   displayName: 'Prepare environment'
-
+  env:
+    USER_PWD: ${{ parameters.pwd }}
