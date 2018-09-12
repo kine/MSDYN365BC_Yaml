@@ -1,0 +1,20 @@
+# File: CompileALApps.yml
+
+parameters:
+  CertPath: ''
+  CertPwd: ''
+
+steps:
+- powershell: |
+   Import-Module NVRAppDevOps -DisableNameChecking
+   
+   $Config = Read-ALConfiguration -Path .\ 
+   $Config | Compile-ALProjectTree -OrderedApps (Get-ALAppOrder) -PackagesPath $env:Build_BinariesDirectory -CertPwd $env:CertPwd -CertPath $env:CertPath
+   copy-item -Path (Join-Path $env:Build_BinariesDirectory '*.app') -Destination $env:Build_ArtifactStagingDirectory -Filter "*_$($Config.AppName)_*.app"
+   copy-item -Path (Join-Path $env:Build_BinariesDirectory '*.app') -Destination $env:Build_ArtifactStagingDirectory -Filter "*_$($Config.TestAppName)_*.app" 
+
+  displayName: 'Compile AL Apps'
+  env:
+    CertPath: ${{ parameters.CertPath }}
+    CertPwd: ${{ parameters.CertPassword }}
+

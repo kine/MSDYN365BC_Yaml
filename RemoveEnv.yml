@@ -1,0 +1,12 @@
+# File: RemoveEnv.yml
+
+steps:
+- powershell: |
+   Import-Module NVRAppDevOps -DisableNameChecking
+  
+   $Config = Read-ALConfiguration -Path .\
+   $Config | Remove-ALEnvironment
+    
+
+  displayName: 'Remove environment'
+  condition: always()

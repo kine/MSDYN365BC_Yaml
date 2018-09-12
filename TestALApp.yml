@@ -1,0 +1,19 @@
+# File: TestALApp.yml
+
+parameters:
+  TrxFile: 'TestResults.trx'
+  TestCodeunitId: 0
+
+steps:
+- powershell: |
+   Import-Module NVRAppDevOps -DisableNameChecking
+   
+   $Config = Read-ALConfiguration -Path .\ 
+   $Config | Test-ALApp -TrxFile $env:TrxFile -TestCodeunitId $env:TestCodeunitId -ErrorOnFailedTest 
+
+  displayName: 'Run Tests'
+  env:
+    TrxFile: ${{ parameters.TrxFile }}
+    TestCodeunitId: ${{ parameters.TestCodeunitId }}
+
+

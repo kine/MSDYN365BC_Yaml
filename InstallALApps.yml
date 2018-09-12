@@ -1,0 +1,20 @@
+# File: InstallAlApps.yml
+
+parameters:
+  SkipVerification: ''
+
+steps:
+- powershell: |
+   Import-Module NVRAppDevOps -DisableNameChecking
+   
+   $Config = Read-ALConfiguration -Path .\ 
+   $Config | UnPublish-ALAppTree -OrderedApps (Get-ALAppOrder)
+   if (-not $SkipVerification) {
+   $Config | Publish-ALAppTree -OrderedApps (Get-ALAppOrder) -PackagesPath $env:Build_BinariesDirectory
+   } else {
+   $Config | Publish-ALAppTree -OrderedApps (Get-ALAppOrder) -PackagesPath $env:Build_BinariesDirectory -SkipVerification 'true'
+   } 
+
+  displayName: 'Install AL Apps'
+  env:
+    SkipVerification: ${{ parameters.SkipVerification }}
