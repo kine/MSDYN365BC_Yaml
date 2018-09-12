@@ -3,22 +3,26 @@ trigger:
 
 resources:
   repositories:
-  #To use the templates, create first Service connection in your Azure DevOps project to GitHub, named GitHub    
   - repository: MSDYN365BC_Yaml
     type: github
     name: kine/MSDYN365BC_Yaml
     ref: 'refs/heads/master'
     endpoint: GitHub
   - repository: self
+    checkoutOptions:
+      submodules: true
 
 variables:
-  UserPwd: 'pass@word1'
-  CertPath: 'c:\Cert\CodeSigning.p12'
-  CertPwd: 'CertPwd'
   TestCodeunitId: 130402
+  # Define variable USER.PASSWORD for password of the user account under which the agent runs
+  # Define variable CertPassword for cetificate password
+  # Define variable CertFile for path and name of the certificate
+  UserPwd: $(USER.PASSWORD)
+  CertPwd: $(CertPassword)
 
 queue:
   name: default
+  #demands: Docker
 
 steps:
 - task: NuGetToolInstaller@0
@@ -34,17 +38,18 @@ steps:
 
 - template: Templates/CompileALApps.yml@MSDYN365BC_Yaml
   parameters:
-    CertPath: $(CertPath)
-    CertPwd: $(CertPassword)
+    CertPath: $(CertFile)
+    CertPwd: $(CertPwd)
 
 - template: Templates/InstallALApps.yml@MSDYN365BC_Yaml
   parameters:
-    CertPath: $(CertPath)
+    CertPath: $(CertFile)
 
 - template: Templates/TestALApp.yml@MSDYN365BC_Yaml
   parameters:
     TrxFile: TestResults.trx
     TestCodeunitId: $(TestCodeunitId)
+    pwd: $(UserPwd)
 
 - task: PublishBuildArtifacts@1
 

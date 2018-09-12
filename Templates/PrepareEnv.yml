@@ -7,7 +7,6 @@ steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
 
-   Write-Host "env:USER_PWD = $($env:USER_PWD)"
    $Config = Read-ALConfiguration -Path .\ -Password $env:USER_PWD
    $Config | Init-ALEnvironment -Build $True -Password $env:USER_PWD
 
