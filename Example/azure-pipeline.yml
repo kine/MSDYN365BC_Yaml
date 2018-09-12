@@ -1,16 +1,20 @@
+trigger:
+- master
+
 resources:
-- repo: self
   repositories:
+  #To use the templates, create first Service connection in your Azure DevOps project to GitHub, named GitHub    
   - repository: MSDYN365BC_Yaml
     type: github
     name: kine/MSDYN365BC_Yaml
     ref: 'refs/heads/master'
-    endpoint: MSDYN365BC_Yaml
+    endpoint: GitHub
+  - repository: self
 
 variables:
   UserPwd: 'pass@word1'
-  CertPath: 'c:\cert.cer'
-  CertPwd: 'mycertpwd'
+  CertPath: 'c:\Cert\CodeSigning.p12'
+  CertPwd: 'CertPwd'
   TestCodeunitId: 130402
 
 queue:
@@ -20,24 +24,24 @@ steps:
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.3.0'
 
-- template: templates/PrepareEnv.yml@MSDYN365BC_Yaml
+- template: Templates/PrepareEnv.yml@MSDYN365BC_Yaml
   parameters:
     pwd: $(UserPwd)
 
-- template: templates/DownloadSymbols.yml@MSDYN365BC_Yaml
+- template: Templates/DownloadSymbols.yml@MSDYN365BC_Yaml
   parameters:
     pwd: $(UserPwd)
 
-- template: templates/CompileALApps.yml@MSDYN365BC_Yaml
+- template: Templates/CompileALApps.yml@MSDYN365BC_Yaml
   parameters:
     CertPath: $(CertPath)
     CertPwd: $(CertPassword)
 
-- template: templates/InstallAlApps.yml@MSDYN365BC_Yaml
+- template: Templates/InstallALApps.yml@MSDYN365BC_Yaml
   parameters:
     CertPath: $(CertPath)
 
-- template: templates/TestAlApps.yml@MSDYN365BC_Yaml
+- template: Templates/TestALApp.yml@MSDYN365BC_Yaml
   parameters:
     TrxFile: TestResults.trx
     TestCodeunitId: $(TestCodeunitId)
@@ -58,9 +62,4 @@ steps:
   condition: succeededOrFailed()
 
 
-- template: templates/RemoveEnv.yml@MSDYN365BC_Yaml
-
-
-
-
-
+- template: Templates/RemoveEnv.yml@MSDYN365BC_Yaml
