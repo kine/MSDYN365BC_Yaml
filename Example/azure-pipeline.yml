@@ -1,0 +1,66 @@
+resources:
+- repo: self
+  repositories:
+  - repository: MSDYN365BC_Yaml
+    type: github
+    name: kine/MSDYN365BC_Yaml
+    ref: 'refs/heads/master'
+    endpoint: MSDYN365BC_Yaml
+
+variables:
+  UserPwd: 'pass@word1'
+  CertPath: 'c:\cert.cer'
+  CertPwd: 'mycertpwd'
+  TestCodeunitId: 130402
+
+queue:
+  name: default
+
+steps:
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 4.3.0'
+
+- template: templates/PrepareEnv.yml@MSDYN365BC_Yaml
+  parameters:
+    pwd: $(UserPwd)
+
+- template: templates/DownloadSymbols.yml@MSDYN365BC_Yaml
+  parameters:
+    pwd: $(UserPwd)
+
+- template: templates/CompileALApps.yml@MSDYN365BC_Yaml
+  parameters:
+    CertPath: $(CertPath)
+    CertPwd: $(CertPassword)
+
+- template: templates/InstallAlApps.yml@MSDYN365BC_Yaml
+  parameters:
+    CertPath: $(CertPath)
+
+- template: templates/TestAlApps.yml@MSDYN365BC_Yaml
+  parameters:
+    TrxFile: TestResults.trx
+    TestCodeunitId: $(TestCodeunitId)
+
+- task: PublishBuildArtifacts@1
+
+  displayName: 'Publish Artifact: App'
+  inputs:
+    ArtifactName: App
+
+
+- task: PublishTestResults@2
+
+  displayName: 'Publish Test Results **\Test*.trx'
+  inputs:
+    testRunner: VSTest
+    testResultsFiles: '**\Test*.trx'
+  condition: succeededOrFailed()
+
+
+- template: templates/RemoveEnv.yml@MSDYN365BC_Yaml
+
+
+
+
+
