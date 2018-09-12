@@ -3,7 +3,7 @@
 parameters:
   TrxFile: 'TestResults.trx'
   TestCodeunitId: 0
-  pwd: 'pass@word1'
+
 
 steps:
 - powershell: |
@@ -16,5 +16,5 @@ steps:
   env:
     TrxFile: ${{ parameters.TrxFile }}
     TestCodeunitId: ${{ parameters.TestCodeunitId }}
-    USER_PASSWORD: ${{ parameters.pwd }}
+
 

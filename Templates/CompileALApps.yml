@@ -1,9 +1,5 @@
 # File: CompileALApps.yml
 
-parameters:
-  CertPath: ''
-  CertPwd: ''
-
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
@@ -14,7 +10,5 @@ steps:
    copy-item -Path (Join-Path $env:Build_BinariesDirectory '*.app') -Destination $env:Build_ArtifactStagingDirectory -Filter "*_$($Config.TestAppName)_*.app" 
 
   displayName: 'Compile AL Apps'
-  env:
-    CertPath: ${{ parameters.CertPath }}
-    CertPwd: ${{ parameters.CertPassword }}
+ 
 
