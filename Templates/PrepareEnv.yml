@@ -1,8 +1,5 @@
 # File: PrepareEnv.yml
 
-parameters:
-  pwd: 'pass@word1'
-
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
@@ -12,5 +9,4 @@ steps:
 
   failOnStderr: true
   displayName: 'Prepare environment'
-  env:
-    USER_PASSWORD: ${{ parameters.pwd }}
+
