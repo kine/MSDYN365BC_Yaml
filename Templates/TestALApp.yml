@@ -16,5 +16,5 @@ steps:
   env:
     TrxFile: ${{ parameters.TrxFile }}
     TestCodeunitId: ${{ parameters.TestCodeunitId }}
-    USER_PWDD: ${{ parameters.pwd }}
+    USER_PWD: ${{ parameters.pwd }}
 
