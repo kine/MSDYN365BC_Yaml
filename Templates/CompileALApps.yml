@@ -16,5 +16,5 @@ steps:
   displayName: 'Compile AL Apps'
   env:
     CertPath: ${{ parameters.CertPath }}
-    CertPwd: ${{ parameters.CertPassword }}
+    CertPwd: ${{ parameters.CertPwd }}
 
