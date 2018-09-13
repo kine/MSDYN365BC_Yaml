@@ -1,3 +1,19 @@
+# File: .vsts-ci.yml
+# 
+# Author: Kamil (Kine) Sacek
+#
+# To use, place this file into root of your git repository and push to the Azure DevOps repository. 
+# Build pipeline will be created automagically and will build your app.
+#
+# Prerequisities:
+#   Service connection with name "GitHub" leading to GitHub in your Azure DevOps Project.
+#   If the service connection have another name, change the name in "endpoint:" line.
+#
+#   To use CodeSigning Certificate, You can place it to some shared folder and set the password for it.
+#   If used on Agent with Domain, you can create certificate without password but secured with access for
+#   specific users. In this case do not fill the CertPwd variable.
+#
+
 trigger:
 - master
 
@@ -14,19 +30,23 @@ resources:
 
 variables:
   TestCodeunitId: 130402
-  # Define variable USER.PASSWORD for password of the user account under which the agent runs
-  # Define variable CertPassword for cetificate password
-  # Define variable CertFile for path and name of the certificate
-  UserPwd: $(USER.PASSWORD)
-  CertPwd: $(CertPassword)
+  #UserPwd: $(USER.PASSWORD)
+  UserPwd: 'pass@word1'
+  CertFile: 'c:\Cert\CodeSigning.pfx'
+  CertPwd: ''
 
 queue:
   name: default
-  #demands: Docker
+  demands: Docker
 
 steps:
+- checkout: self
+  submodules: true
+
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.3.0'
+
+- template: Templates/InstallModules.yml@MSDYN365BC_Yaml
 
 - template: Templates/PrepareEnv.yml@MSDYN365BC_Yaml
   parameters:

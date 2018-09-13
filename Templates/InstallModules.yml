@@ -1,0 +1,15 @@
+# File: InstallModules.yml
+
+steps:
+- powershell: |
+    Write-Host "Installing module NVRAppDevOps"
+    install-module -Name NVRAppDevOps -Scope CurrentUser -Force -SkipPublisherCheck
+    Write-Host "Updating module NVRAppDevOps"
+    update-module -Name NVRAppDevOps
+    Write-Host "Installing module NavContainerHelper"
+    install-module -Name NavContainerHelper -Scope CurrentUser -Force -SkipPublisherCheck
+    Write-Host "Updating module NavContainerHelper"
+    update-module -Name NavContainerHelper
+
+  failOnStderr: true
+  displayName: 'Install Modules'
