@@ -37,7 +37,7 @@ variables:
 
 queue:
   name: default
-  demands: Docker
+  #demands: Docker
 
 steps:
 - checkout: self
