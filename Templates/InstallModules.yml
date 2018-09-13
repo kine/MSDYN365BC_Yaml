@@ -2,14 +2,19 @@
 
 steps:
 - powershell: |
-    Write-Host "Installing module NVRAppDevOps"
-    install-module -Name NVRAppDevOps -Scope CurrentUser -Force -SkipPublisherCheck
+    if (-not (Get-Module NVRAppDevOps -ListAvailable)) {
+      Write-Host "Installing module NVRAppDevOps"
+      install-module -Name NVRAppDevOps -Scope CurrentUser -Force -SkipPublisherCheck
+    }
     Write-Host "Updating module NVRAppDevOps"
     update-module -Name NVRAppDevOps
-    Write-Host "Installing module NavContainerHelper"
-    install-module -Name NavContainerHelper -Scope CurrentUser -Force -SkipPublisherCheck
-    Write-Host "Updating module NavContainerHelper"
-    update-module -Name NavContainerHelper
+
+    if (-not (Get-Module navcontainerhelper -ListAvailable)) {
+      Write-Host "Installing module navcontainerhelper"
+      install-module -Name navcontainerhelper -Scope CurrentUser -Force -SkipPublisherCheck
+    }
+    Write-Host "Updating module navcontainerhelper"
+    update-module -Name navcontainerhelper
 
   failOnStderr: true
   displayName: 'Install Modules'
