@@ -1,0 +1,11 @@
+# File: SetAppBuildNo.yml
+
+steps:
+- powershell: |
+   Import-Module NVRAppDevOps -DisableNameChecking
+  
+   $Config = Read-ALConfiguration -Path .\
+   $Config | Set-ALAppBuildNo
+    
+
+  displayName: 'Set App Build and Revision No.'
