@@ -10,9 +10,9 @@ steps:
    $Config = Read-ALConfiguration -Path .\ 
    $Config | UnPublish-ALAppTree -OrderedApps (Get-ALAppOrder)
    if ($env:CertPath) {
-   $Config | Publish-ALAppTree -OrderedApps (Get-ALAppOrder) -PackagesPath $env:Build_BinariesDirectory
+   $Config | Publish-ALAppTree -OrderedApps (Get-ALAppOrder) -PackagesPath $env:Build_ArtifactStagingDirectory
    } else {
-   $Config | Publish-ALAppTree -OrderedApps (Get-ALAppOrder) -PackagesPath $env:Build_BinariesDirectory -SkipVerification 'true'
+   $Config | Publish-ALAppTree -OrderedApps (Get-ALAppOrder) -PackagesPath $env:Build_ArtifactStagingDirectory -SkipVerification 'true'
    } 
 
   displayName: 'Install AL Apps'

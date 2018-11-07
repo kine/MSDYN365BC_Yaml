@@ -14,7 +14,7 @@ steps:
      Install-NAVSipCryptoProviderFromNavContainer -containerName $Config.ContainerName
    }
 
-   $Config | Compile-ALProjectTree -OrderedApps (Get-ALAppOrder) -PackagesPath $Config.RepoPath  -CertPwd $env:CertPwd -CertPath $env:CertPath
+   $Config | Compile-ALProjectTree -OrderedApps (Get-ALAppOrder) -PackagesPath $Config.RepoPath -CertPwd $env:CertPwd -CertPath $env:CertPath
    copy-item -Path (Join-Path $Config.RepoPath '*.app') -Destination $env:Build_ArtifactStagingDirectory -Filter "*_$($Config.AppName)_*.app"
    copy-item -Path (Join-Path $Config.RepoPath '*.app') -Destination $env:Build_ArtifactStagingDirectory -Filter "*_$($Config.TestAppName)_*.app" 
 
