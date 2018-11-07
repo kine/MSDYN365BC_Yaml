@@ -3,12 +3,13 @@
 parameters:
   CertPath: ''
   CertPwd: ''
+  pwd: 'pass@word1'
 
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
  
-   $Config = Read-ALConfiguration -Path .\ 
+   $Config = Read-ALConfiguration -Path .\ -Password $env:USER_PWD
    if ($CertPath) {
      Install-NAVSipCryptoProviderFromNavContainer -containerName $Config.ContainerName
    }
@@ -21,4 +22,4 @@ steps:
   env:
     CertPath: ${{ parameters.CertPath }}
     CertPwd: ${{ parameters.CertPwd }}
-
+    USER_PWD: ${{ parameters.pwd }}

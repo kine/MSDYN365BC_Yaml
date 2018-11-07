@@ -1,0 +1,10 @@
+# File: ImportTestToolkit.yml
+
+steps:
+- powershell: |
+   Import-Module NVRAppDevOps -DisableNameChecking
+  
+   $Config = Read-ALConfiguration -Path .\
+   Import-TestToolkitToNavContainer -containerName $Config.ContainerName
+
+  displayName: 'Import Test Toolkit'
