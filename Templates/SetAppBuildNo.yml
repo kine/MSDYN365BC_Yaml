@@ -7,7 +7,7 @@ steps:
    Import-Module NVRAppDevOps -DisableNameChecking
   
    $Config = Read-ALConfiguration -Path .\
-   $Config | Set-ALAppBuildNo -UpdateDevOpsBuildNo:[$env.UpdateDevOpsBuildNo -eq 1]
+   $Config | Set-ALAppBuildNo -UpdateDevOpsBuildNo:[bool]$env.UpdateDevOpsBuildNo
     
 
   displayName: 'Set App Build and Revision No.'
