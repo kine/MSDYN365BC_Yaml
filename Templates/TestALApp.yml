@@ -8,6 +8,7 @@ parameters:
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
+   Import-Module navcontainerhelper -DisableNameChecking
    $Config = Read-ALConfiguration -Path .\ 
    $Config | Test-ALApp -TrxFile $env:TrxFile -TestCodeunitId $env:TestCodeunitId -ErrorOnFailedTest -Password $env:USER_PWD
 

@@ -6,7 +6,7 @@ parameters:
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
-
+   Import-Module navcontainerhelper -DisableNameChecking
    $Config = Read-ALConfiguration -Path .\ 
    $Config | Download-ALSystemPackages -Password $env:USER_PWD -Build 'True' -AlPackagesPath $env:Build_BinariesDirectory
     

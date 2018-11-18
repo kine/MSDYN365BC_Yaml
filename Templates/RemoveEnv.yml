@@ -3,7 +3,7 @@
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
-  
+   Import-Module navcontainerhelper -DisableNameChecking
    $Config = Read-ALConfiguration -Path .\
    $Config | Remove-ALEnvironment
     
