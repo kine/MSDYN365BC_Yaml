@@ -4,7 +4,7 @@ steps:
 - powershell: |
     if (-not (Get-Module NVRAppDevOps -ListAvailable)) {
       Write-Host "Installing module NVRAppDevOps"
-      install-module -Name NVRAppDevOps -Scope CurrentUser -Force -SkipPublisherCheck
+      install-module .\Scripts\NVRAppDevOps\NVRAppDevOps.psm1 -Scope CurrentUser -Force
     }
     Write-Host "Updating module NVRAppDevOps"
     update-module -Name NVRAppDevOps -Force
