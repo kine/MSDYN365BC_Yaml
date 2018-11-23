@@ -7,7 +7,7 @@ parameters:
 
 steps:
 - powershell: |
-   Import-Module NVRAppDevOps -DisableNameChecking
+   Import-Module .\Scripts\NVRAppDevOps\NVRAppDevOps.psm1 -DisableNameChecking
    Import-Module navcontainerhelper -DisableNameChecking
    $Config = Read-ALConfiguration -Path .\ -Password $env:USER_PWD
    if ($CertPath) {
