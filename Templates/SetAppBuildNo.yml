@@ -5,7 +5,7 @@ parameters:
 steps:
 - powershell: |
    Import-Module .\Scripts\NVRAppDevOps\NVRAppDevOps.psm1 -DisableNameChecking
-   Import-Module navcontainerhelper -DisableNameChecking
+   Import-Module .\Scripts\navcontainerhelper\NavContainerHelper.psm1 -DisableNameChecking
    $Config = Read-ALConfiguration -Path .\
    $Config | Set-ALAppBuildNo -UpdateDevOpsBuildNo:([bool]$env:UpdateDevOpsBuildNo)
     
