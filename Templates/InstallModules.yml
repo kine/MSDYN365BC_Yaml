@@ -2,18 +2,7 @@
 
 steps:
 - powershell: |
-    if (-not (Get-Module NVRAppDevOps -ListAvailable)) {
-      Write-Host "Installing module NVRAppDevOps"
-      install-module -Name NVRAppDevOps -Scope CurrentUser -Force -SkipPublisherCheck
-    }
-    Write-Host "Updating module NVRAppDevOps"
-    update-module -Name NVRAppDevOps -Force
-    if (-not (Get-Module navcontainerhelper -ListAvailable)) {
-      Write-Host "Installing module navcontainerhelper"
-      install-module -Name navcontainerhelper -Scope CurrentUser -Force -SkipPublisherCheck
-    }
-    Write-Host "Updating module navcontainerhelper"
-    update-module -Name navcontainerhelper -Force
+    Write-Host "*Disabled* All modules are included in the source repository (Needed for DotNet support)"
 
   failOnStderr: true
   displayName: 'Install Modules'

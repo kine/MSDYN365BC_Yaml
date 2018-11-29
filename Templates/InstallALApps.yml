@@ -5,8 +5,8 @@ parameters:
 
 steps:
 - powershell: |
-   Import-Module NVRAppDevOps -DisableNameChecking
-   Import-Module navcontainerhelper -DisableNameChecking
+   Import-Module .\Scripts\NVRAppDevOps\NVRAppDevOps.psm1 -DisableNameChecking
+   Import-Module .\Scripts\navcontainerhelper\NavContainerHelper.psm1 -DisableNameChecking
    $Config = Read-ALConfiguration -Path .\ 
    $Config | UnPublish-ALAppTree -OrderedApps (Get-ALAppOrder)
    if ($env:CertPath) {

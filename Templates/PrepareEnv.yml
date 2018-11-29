@@ -2,16 +2,23 @@
 
 parameters:
   pwd: 'pass@word1'
+  registryUsername: ''
+  registryPassword: ''
 
 steps:
 - powershell: |
-   Import-Module NVRAppDevOps -DisableNameChecking
-   Import-Module navcontainerhelper -DisableNameChecking
-
-   $Config = Read-ALConfiguration -Path .\ -Password $env:USER_PWD
-   $Config | Init-ALEnvironment -Build $True -Password $env:USER_PWD
+   Import-Module .\Scripts\NVRAppDevOps\NVRAppDevOps.psm1 -DisableNameChecking
+   Import-Module .\Scripts\navcontainerhelper\NavContainerHelper.psm1 -DisableNameChecking
+   
+   # Registry Credentials
+   $RegistryCred = New-Object System.Management.Automation.PSCredential($env:REGISTRY_USERNAME, (ConvertTo-SecureString $env:REGISTRY_PASSWORD -AsPlainText -Force))
+   
+   $Config = Read-ALConfiguration -Path .\ -Password $env:USER_PWD -RegistryCred $RegistryCred
+   $Config | Init-ALEnvironment -Build $True -Password $env:USER_PWD -RegistryCred $RegistryCred
 
   failOnStderr: true
   displayName: 'Prepare environment'
   env:
     USER_PWD: ${{ parameters.pwd }}
+    REGISTRY_USERNAME: ${{ parameters.registryUsername }}
+    REGISTRY_PASSWORD: ${{ parameters.registryPassword }}
