@@ -1,24 +1,21 @@
 # File: CompileALApps.yml
 
 parameters:
-  CertPath: ''
-  CertPwd: ''
-  pwd: 'pass@word1'
+  ConfigFolder: ''
 
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
    Import-Module navcontainerhelper -DisableNameChecking
-   $Config = Read-ALConfiguration -Path .\ -Password $env:USER_PWD
-   if ($CertPath) {
-     Install-NAVSipCryptoProviderFromNavContainer -containerName $Config.ContainerName
+
+   $Config = Get-Content (-join($env:ConfigFolder,"\config.json")) | ConvertFrom-JSON
+
+   $Config | Compile-ALProjectTree -OrderedApps (Get-ALAppOrder -AppCollection $Config.AllApps) -PackagesPath $Config.RepoPath -CertPath $Config.CertFile
+
+   $Config.AllApps | % {
+    copy-item -Path (Join-Path -Path $Config.RepoPath -ChildPath (-join("*",$_.name,"*.app")) -Resolve) -Destination $env:Build_ArtifactStagingDirectory
    }
-   $Config | Compile-ALProjectTree -OrderedApps (Get-ALAppOrder) -PackagesPath $Config.RepoPath -CertPwd $env:CertPwd -CertPath $env:CertPath
-   copy-item -Path (Join-Path $Config.RepoPath '*.app') -Destination $env:Build_ArtifactStagingDirectory -Filter "*_$($Config.AppName)_*.app"
-   copy-item -Path (Join-Path $Config.RepoPath '*.app') -Destination $env:Build_ArtifactStagingDirectory -Filter "*_$($Config.TestAppName)_*.app" 
 
   displayName: 'Compile AL Apps'
   env:
-    CertPath: ${{ parameters.CertPath }}
-    CertPwd: ${{ parameters.CertPwd }}
-    USER_PWD: ${{ parameters.pwd }}
+    ConfigFolder: ${{ parameters.ConfigFolder }}

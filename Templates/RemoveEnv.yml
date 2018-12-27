@@ -4,9 +4,13 @@ steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
    Import-Module navcontainerhelper -DisableNameChecking
-   $Config = Read-ALConfiguration -Path .\
+
+   $Config = Get-Content (-join($env:ConfigFolder,"\config.json")) | ConvertFrom-JSON
    $Config | Remove-ALEnvironment
-    
+
+   Remove-Item -Path (-join($env:ConfigFolder,"\config.json")) -Force
 
   displayName: 'Remove environment'
   condition: always()
+  env:
+    ConfigFolder: ${{ parameters.ConfigFolder }}

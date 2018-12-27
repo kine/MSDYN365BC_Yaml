@@ -1,17 +1,17 @@
 # File: PrepareEnv.yml
 
 parameters:
-  pwd: 'pass@word1'
+  ConfigFolder: ''
 
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
    Import-Module navcontainerhelper -DisableNameChecking
 
-   $Config = Read-ALConfiguration -Path .\ -Password $env:USER_PWD
-   $Config | Init-ALEnvironment -Build $True -Password $env:USER_PWD
+   $Config = Get-Content (-join($env:ConfigFolder,"\config.json")) | ConvertFrom-JSON
+   $Config | Init-ALEnvironment
 
   failOnStderr: true
   displayName: 'Prepare environment'
   env:
-    USER_PWD: ${{ parameters.pwd }}
+    ConfigFolder: ${{ parameters.ConfigFolder }}

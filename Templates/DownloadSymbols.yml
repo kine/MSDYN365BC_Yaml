@@ -1,16 +1,18 @@
 # File: DownloadSymbols.yml
 
 parameters:
-  pwd: 'pass@word1'
+  ConfigFolder: ''
 
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
    Import-Module navcontainerhelper -DisableNameChecking
-   $Config = Read-ALConfiguration -Path .\ 
-   $Config | Download-ALSystemPackages -Password $env:USER_PWD -Build 'True' -AlPackagesPath $env:Build_BinariesDirectory
-    
+
+   $Config = Get-Content (-join($env:ConfigFolder,"\config.json")) | ConvertFrom-JSON
+
+   $Config.AllApps.platform | Select-Object -Unique | % { 
+      $Config | Download-ALSystemPackages -AlPackagesPath $env:Build_BinariesDirectory -PlatformVersion $_} 
 
   displayName: 'Download system symbols'
   env:
-    USER_PWD: ${{ parameters.pwd }}
+    ConfigFolder: ${{ parameters.ConfigFolder }}

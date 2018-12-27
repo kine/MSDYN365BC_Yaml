@@ -1,0 +1,75 @@
+# File: EnsureConfig.yml
+
+parameters:
+  Auth: ''
+  CertFile: ''
+  CertPwd: ''
+  CertSecret: ''
+  ConfigFolder: ''
+  ContainerName: ''
+  ImageName: ''
+  LicenseFile: ''
+  UserPwd: ''
+
+steps:
+- powershell: |
+   Import-Module NVRAppDevOps -DisableNameChecking
+   Import-Module navcontainerhelper -DisableNameChecking
+
+   if(!([String]::IsNullOrEmpty($env:CertFile)) -and (!([String]::IsNullOrEmpty($env:CertSecret))))
+   {
+     Write-Error "You can only specify CertFile or CertSecret not both at the same time."
+     exit 1
+   }
+   if($env:CertSecret)
+   {
+    $TmpFile = (New-TemporaryFile | Rename-Item -NewName { $_ -replace 'tmp$', 'pfx' } -PassThru).Fullname
+    $pfxUnprotectedBytes = [Convert]::FromBase64String($env:CertSecret)
+    $pfx = New-Object Security.Cryptography.X509Certificates.X509Certificate2
+    $pfx.Import($pfxUnprotectedBytes, $null, [Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
+    $pfxProtectedBytes = $pfx.Export([Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12, $env:CertPwd)
+    [IO.File]::WriteAllBytes($TmpFile, $pfxProtectedBytes)
+   }
+
+   $Config = New-Object -Typename psobject
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "ContainerName" -Value $env:ContainerName
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "ImageName" -Value $env:ImageName
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "LicenseFile" -Value $env:LicenseFile
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "CertFile" -Value $TmpFile
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "CertPwd" -Value $env:CertPwd
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "Username" -Value $env:Username
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "Password" -Value $env:UserPwd
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "Auth" -Value $env:Auth
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "RepoPath" -Value $env:BUILD_REPOSITORY_LOCALPATH
+   #Switch true for automatic Build in Azure DevOps and false for interactive build
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "Build" -Value $true
+
+   #region TempCode until final solution on how to define apps is found
+   Add-Member -InputObject $Config -MemberType Noteproperty -Name "AllApps" -Value @()
+
+   $Appfiles = Get-ChildItem -Path .\ -Filter app.json -Recurse
+
+   foreach ($File in $Appfiles)
+   {
+    $AppJson = Get-Content -Path $File.FullName | ConvertFrom-Json
+    $AppJson | Add-Member -MemberType NoteProperty -Name "AppPath" -Value $File.FullName
+
+    $Config.AllApps += $AppJson
+   }
+   #endregion
+
+   Write-Host $Config
+
+   $Config | ConvertTo-Json -Depth 100 | Out-File (-join($env:ConfigFolder,"\config.json")) -Force
+
+  displayName: 'Ensure AL Config'
+  env:
+    Auth: ${{ parameters.Auth }}
+    CertFile: ${{ parameters.CertFile }}
+    CertPwd: ${{ parameters.CertPwd }}
+    CertSecret: ${{ parameters.CertSecret }}
+    ConfigFolder: ${{ parameters.ConfigFolder }}
+    ContainerName: ${{ parameters.ContainerName }}
+    ImageName: ${{ parameters.ImageName }}
+    LicenseFile: ${{ parameters.LicenseFile }}
+    UserPwd: ${{ parameters.UserPwd }}

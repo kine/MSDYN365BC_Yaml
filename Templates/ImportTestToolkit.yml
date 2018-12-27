@@ -1,10 +1,15 @@
 # File: ImportTestToolkit.yml
+parameters:
+  ConfigFolder: ''
 
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
    Import-Module navcontainerhelper -DisableNameChecking
-   $Config = Read-ALConfiguration -Path .\
+
+   $Config = Get-Content (-join($env:ConfigFolder,"\config.json")) | ConvertFrom-JSON
    Import-TestToolkitToNavContainer -containerName $Config.ContainerName
 
   displayName: 'Import Test Toolkit'
+  env:
+    ConfigFolder: ${{ parameters.ConfigFolder }}
