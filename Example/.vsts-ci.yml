@@ -69,10 +69,6 @@ steps:
   parameters:
     ConfigFolder: $(ConfigFolder)
 
-- template: Templates/DownloadSymbols.yml@MSDYN365BC_Yaml
-  parameters:
-    ConfigFolder: $(ConfigFolder)
-
 - template: Templates/SetAppBuildNo.yml@MSDYN365BC_Yaml
   parameters:
     ConfigFolder: $(ConfigFolder)
