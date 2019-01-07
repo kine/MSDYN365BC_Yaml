@@ -1,15 +1,28 @@
 # File: SetAppBuildNo.yml
 parameters:
+  ConfigFolder: ''
   UpdateDevOpsBuildNo: 1
 
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
    Import-Module navcontainerhelper -DisableNameChecking
-   $Config = Read-ALConfiguration -Path .\
-   $Config | Set-ALAppBuildNo -UpdateDevOpsBuildNo:([bool]$env:UpdateDevOpsBuildNo)
-    
+
+   $Config = Get-Content (-join($env:ConfigFolder,"\config.json")) | ConvertFrom-JSON
+
+   [Version]$version = ($Config.AllApps.version | Sort-Object -Descending)[0]
+
+   $NewVersion = "$($version.Major).$($version.Minor).$($env:BUILD_BUILDID).0"
+
+   write-host "Updating build pipeline no. to $NewVersion"
+   write-host "##vso[build.updatebuildnumber]$NewVersion"
+   $Config.AllApps.AppPath | % {
+      $AppSetup = Get-Content -Path $_ -Encoding UTF8 | ConvertFrom-Json
+      $AppSetup.version = $NewVersion
+      $AppSetup | ConvertTo-Json -Depth 5 -Compress | Set-Content -Path $_ -Encoding UTF8
+   }
 
   displayName: 'Set App Build and Revision No.'
   env:
+    ConfigFolder: ${{ parameters.ConfigFolder }}
     UpdateDevOpsBuildNo: ${{ parameters.UpdateDevOpsBuildNo }}

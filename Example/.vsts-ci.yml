@@ -1,8 +1,8 @@
 # File: .vsts-ci.yml
-# 
+#
 # Author: Kamil (Kine) Sacek
 #
-# To use, place this file into root of your git repository and push to the Azure DevOps repository. 
+# To use, place this file into root of your git repository and push to the Azure DevOps repository.
 # Build pipeline will be created automagically and will build your app.
 #
 # Prerequisities:
@@ -29,15 +29,20 @@ resources:
       submodules: true
 
 variables:
-  TestCodeunitId: 130402
-  #UserPwd: $(USER.PASSWORD)
-  UserPwd: 'pass@word1'
-  CertFile: 'c:\Cert\CodeSigning.pfx'
+  Auth: 'Windows' # Windows or NavUserPassword
+  CertFile: 'c:\Cert\CodeSigning.pfx' # Defines location of certificate if build agent is persistent. Can't be defined with CertSecret at the same time
   CertPwd: ''
+  CertSecret: '' # If certificate has been imported to Azure Key Vault it can be linked here directly
+  ConfigFolder: '' # Absolute path of the folder to store config.json
+  ContainerName: 'BC' # Name of the Container
+  ImageName: 'microsoft/bcsandbox'
+  LicenseFile: '' # File can be located on agent machine or in Azure Key Vault
+  TestCodeunitId: '130402'
+  UserPwd: 'pass@word1'
 
 queue:
   name: default
-  #demands: Docker
+  demands: Docker
 
 steps:
 - checkout: self
@@ -48,28 +53,39 @@ steps:
 
 - template: Templates/InstallModules.yml@MSDYN365BC_Yaml
 
+- template: Templates/EnsureConfig.yml@MSDYN365BC_Yaml
+  parameters:
+    Auth: $(Auth)
+    CertFile: $(CertFile)
+    CertPwd: $(CertPwd)
+    CertSecret: $(CertSecret)
+    ConfigFolder: $(ConfigFolder)
+    ContainerName: $(ContainerName)
+    ImageName: $(ImageName)
+    LicenseFile: $(LicenseFile)
+    UserPwd: $(UserPwd)
+
 - template: Templates/PrepareEnv.yml@MSDYN365BC_Yaml
   parameters:
-    pwd: $(UserPwd)
+    ConfigFolder: $(ConfigFolder)
 
-- template: Templates/DownloadSymbols.yml@MSDYN365BC_Yaml
+- template: Templates/SetAppBuildNo.yml@MSDYN365BC_Yaml
   parameters:
-    pwd: $(UserPwd)
+    ConfigFolder: $(ConfigFolder)
 
 - template: Templates/CompileALApps.yml@MSDYN365BC_Yaml
   parameters:
-    CertPath: $(CertFile)
-    CertPwd: $(CertPwd)
+    ConfigFolder: $(ConfigFolder)
 
 - template: Templates/InstallALApps.yml@MSDYN365BC_Yaml
   parameters:
-    CertPath: $(CertFile)
+    ConfigFolder: $(ConfigFolder)
 
 - template: Templates/TestALApp.yml@MSDYN365BC_Yaml
   parameters:
+    ConfigFolder: $(ConfigFolder)
     TrxFile: TestResults.trx
     TestCodeunitId: $(TestCodeunitId)
-    pwd: $(UserPwd)
 
 - task: PublishBuildArtifacts@1
 
@@ -77,14 +93,15 @@ steps:
   inputs:
     ArtifactName: App
 
-
 - task: PublishTestResults@2
 
   displayName: 'Publish Test Results **\Test*.trx'
   inputs:
     testRunner: VSTest
     testResultsFiles: '**\Test*.trx'
+    searchFolder: '$(Common.TestResultsDirectory)'
   condition: succeededOrFailed()
 
-
 - template: Templates/RemoveEnv.yml@MSDYN365BC_Yaml
+  parameters:
+    ConfigFolder: $(ConfigFolder)

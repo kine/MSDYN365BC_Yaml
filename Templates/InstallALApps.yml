@@ -1,20 +1,24 @@
 # File: InstallAlApps.yml
 
 parameters:
-  CertPath: ''
+  ConfigFolder: ''
 
 steps:
 - powershell: |
    Import-Module NVRAppDevOps -DisableNameChecking
    Import-Module navcontainerhelper -DisableNameChecking
-   $Config = Read-ALConfiguration -Path .\ 
-   $Config | UnPublish-ALAppTree -OrderedApps (Get-ALAppOrder)
-   if ($env:CertPath) {
-   $Config | Publish-ALAppTree -OrderedApps (Get-ALAppOrder) -PackagesPath $env:Build_ArtifactStagingDirectory
+   
+   $Config = Get-Content (-join($env:ConfigFolder,"\config.json")) | ConvertFrom-JSON
+   
+   $OrderedApps = Get-ALAppOrder -AppCollection $Config.AllApps
+
+   $Config | UnPublish-ALAppTree -OrderedApps $OrderedApps
+   if ($Config.CertFile) {
+     $Config | Publish-ALAppTree -OrderedApps $OrderedApps -PackagesPath $Config.RepoPath
    } else {
-   $Config | Publish-ALAppTree -OrderedApps (Get-ALAppOrder) -PackagesPath $env:Build_ArtifactStagingDirectory -SkipVerification 'true'
+     $Config | Publish-ALAppTree -OrderedApps $OrderedApps -PackagesPath $Config.RepoPath -SkipVerification 'true'
    } 
 
   displayName: 'Install AL Apps'
   env:
-    CertPath: ${{ parameters.CertPath }}
+    ConfigFolder: ${{ parameters.ConfigFolder }}
