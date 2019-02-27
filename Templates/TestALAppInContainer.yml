@@ -1,0 +1,19 @@
+# File: TestALAppInContainer.yml
+
+parameters:
+  XUnitFile: 'TEST-Result.xml'
+  testSuite: 'DEFAULT'
+  pwd: 'pass@word1'
+
+steps:
+- powershell: |
+   Import-Module NVRAppDevOps -DisableNameChecking
+   Import-Module navcontainerhelper -DisableNameChecking
+   $Config = Read-ALConfiguration -Path .\ 
+   $Config | Run-TestsInNavContainer -XUnitResultFileName $env:XUnitFile -testSuite $env:testSuite -AzureDevOps error -detailed
+
+  displayName: 'Run Tests in container'
+  env:
+    XUnitFile: ${{ parameters.XUnitFile }}
+    testSuite: ${{ parameters.testSuite }}
+    USER_PWD: ${{ parameters.pwd }}

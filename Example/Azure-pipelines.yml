@@ -65,26 +65,36 @@ steps:
   parameters:
     CertPath: $(CertFile)
 
-- template: Templates/TestALApp.yml@MSDYN365BC_Yaml
+#- template: Templates/TestALApp.yml@MSDYN365BC_Yaml
+#  parameters:
+#    TrxFile: TestResults.trx
+#    TestCodeunitId: $(TestCodeunitId)
+#    pwd: $(UserPwd)
+#
+#- task: PublishTestResults@2
+#
+#  displayName: 'Publish Test Results **\Test*.trx'
+#  inputs:
+#    testRunner: VSTest
+#    testResultsFiles: '**\Test*.trx'
+#  condition: succeededOrFailed()
+
+- template: Templates/TestALAppInContainer.yml@MSDYN365BC_Yaml
   parameters:
-    TrxFile: TestResults.trx
-    TestCodeunitId: $(TestCodeunitId)
+    XUnitFile: 'TEST-Result.xml'
+    testSuite: 'DEFAULT'
     pwd: $(UserPwd)
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results **/TEST-*.xml'
+  inputs:
+    testResultsFormat: XUnit
+  condition: succeededOrFailed()
 
 - task: PublishBuildArtifacts@1
 
   displayName: 'Publish Artifact: App'
   inputs:
     ArtifactName: App
-
-
-- task: PublishTestResults@2
-
-  displayName: 'Publish Test Results **\Test*.trx'
-  inputs:
-    testRunner: VSTest
-    testResultsFiles: '**\Test*.trx'
-  condition: succeededOrFailed()
-
 
 - template: Templates/RemoveEnv.yml@MSDYN365BC_Yaml
