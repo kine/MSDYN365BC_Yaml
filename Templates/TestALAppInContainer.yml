@@ -1,7 +1,7 @@
 # File: TestALAppInContainer.yml
 
 parameters:
-  XUnitFile: 'TEST-Result.xml'
+  XUnitFile: '.\\TEST-Result.xml'
   testSuite: 'DEFAULT'
   pwd: 'pass@word1'
 
@@ -10,7 +10,8 @@ steps:
    Import-Module NVRAppDevOps -DisableNameChecking
    Import-Module navcontainerhelper -DisableNameChecking
    $Config = Read-ALConfiguration -Path .\ 
-   $Config | Run-AlTestInContainer -XUnitResultFileName $env:XUnitFile -testSuite $env:testSuite -AzureDevOps error -detailed
+   $FullPath = (Get-Item $env:XUnitFile).FullName
+   $Config | Run-AlTestInContainer -XUnitResultFileName $FullPath -testSuite $env:testSuite -AzureDevOps error -detailed
 
   displayName: 'Run Tests in container'
   env:
