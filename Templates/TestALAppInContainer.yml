@@ -10,7 +10,7 @@ steps:
    Import-Module NVRAppDevOps -DisableNameChecking
    Import-Module navcontainerhelper -DisableNameChecking
    $Config = Read-ALConfiguration -Path .\ 
-   $FullPath = (Get-Item $env:XUnitFile).FullName
+   $FullPath = [System.IO.Path]::GetFullPath($env:XUnitFile)
    $Config | Run-AlTestInContainer -XUnitResultFileName $FullPath -testSuite $env:testSuite -AzureDevOps error -detailed
 
   displayName: 'Run Tests in container'
